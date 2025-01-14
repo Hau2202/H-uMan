@@ -2,7 +2,6 @@
 title: resolve ml-models
 versions: # DO NOT MANUALLY EDIT. CHANGES WILL BE OVERWRITTEN BY A 🤖
   fpt: '*'
-  ghae: '*'
   ghec: '*'
   ghes: '*'
 topics:
@@ -32,8 +31,8 @@ codeql resolve ml-models <options>... -- <query|dir|suite|pack>...
 
 ## Description
 
-\[Deprecated] \[Experimental] \[Deep plumbing] Determine accessible
-machine learning models.
+\[Deprecated] \[Deep plumbing] Determine accessible machine learning
+models.
 
 This plumbing command is deprecated. Previously it resolved the set of
 GitHub-created machine learning models that were available to the query
@@ -50,9 +49,9 @@ It now returns an empty list of machine learning models.
 \[Mandatory] Queries to execute. Each argument is in the form
 `scope/name@range:path` where:
 
-- `scope/name` is the qualified name of a CodeQL pack.
-- `range` is a semver range.
-- `path` is a file system path.
+* `scope/name` is the qualified name of a CodeQL pack.
+* `range` is a semver range.
+* `path` is a file system path.
 
 If a `scope/name` is specified, the `range` and `path` are optional. A
 missing `range` implies the latest version of the specified pack. A

@@ -2,7 +2,6 @@
 title: test run
 versions: # DO NOT MANUALLY EDIT. CHANGES WILL BE OVERWRITTEN BY A 🤖
   fpt: '*'
-  ghae: '*'
   ghec: '*'
   ghes: '*'
 topics:
@@ -40,8 +39,8 @@ Run unit tests for QL queries.
 
 Each argument is one of:
 
-- A `.ql` or `.qlref` file that defines a test to run.
-- A directory which will be searched recursively for tests to run.
+* A `.ql` or `.qlref` file that defines a test to run.
+* A directory which will be searched recursively for tests to run.
 
 #### `--failing-exitcode=<code>`
 
@@ -335,6 +334,14 @@ expense of making it much less human readable.
 \[Advanced] Construct entity IDs that encode the location in the TRAP
 file they came from. Can be useful for debugging of TRAP generators, but
 takes up a lot of space in the dataset.
+
+#### `--[no-]linkage-aware-import`
+
+\[Advanced] Controls whether [codeql dataset import](/code-security/codeql-cli/codeql-cli-manual/dataset-import) is linkage-aware _(default)_ or not. On projects where this part of database creation
+consumes too much memory, disabling this option may help them progress
+at the expense of database completeness.
+
+Available since `v2.15.3`.
 
 ### Common options
 

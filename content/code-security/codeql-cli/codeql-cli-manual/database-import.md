@@ -2,7 +2,6 @@
 title: database import
 versions: # DO NOT MANUALLY EDIT. CHANGES WILL BE OVERWRITTEN BY A 🤖
   fpt: '*'
-  ghae: '*'
   ghec: '*'
   ghes: '*'
 topics:
@@ -126,6 +125,14 @@ Use this much memory for the import operation.
 \[Advanced] Construct entity IDs that encode the location in the TRAP
 file they came from. Can be useful for debugging of TRAP generators, but
 takes up a lot of space in the dataset.
+
+#### `--[no-]linkage-aware-import`
+
+\[Advanced] Controls whether [codeql dataset import](/code-security/codeql-cli/codeql-cli-manual/dataset-import) is linkage-aware _(default)_ or not. On projects where this part of database creation
+consumes too much memory, disabling this option may help them progress
+at the expense of database completeness.
+
+Available since `v2.15.3`.
 
 ### Common options
 
