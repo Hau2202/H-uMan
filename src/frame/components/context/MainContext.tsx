@@ -9,9 +9,10 @@ export type ProductT = {
   href: string
   id: string
   name: string
+  nameRendered: string
 }
 
-type VersionItem = {
+export type VersionItem = {
   // free-pro-team@latest, enterprise-cloud@latest, enterprise-server@3.3 ...
   version: string
   versionTitle: string
@@ -73,7 +74,7 @@ type DataT = {
   ui: UIStrings
   reusables: DataReusables
   variables: {
-    release_candidate: { version: string }
+    release_candidate: { version: string | null }
   }
 }
 
@@ -96,7 +97,8 @@ export type MainContextT = {
     href: string
   }
   currentProduct?: ProductT
-  currentLayoutName: string
+  currentProductName: string
+  currentLayoutName?: string
   isHomepageVersion: boolean
   data: DataT
   error: string
@@ -119,11 +121,10 @@ export type MainContextT = {
     hidden: boolean
     noEarlyAccessBanner: boolean
     applicableVersions: string[]
-  }
+  } | null
 
   enterpriseServerVersions: Array<string>
 
-  searchVersions: Record<string, string>
   nonEnterpriseDefaultVersion: string
 
   status: number
@@ -134,8 +135,10 @@ export type MainContextT = {
 // they will always be available and don't need to be manually added.
 // Order does not matter on these.
 const DEFAULT_UI_NAMESPACES = [
+  'alerts',
   'header',
   'search',
+  'old_search',
   'survey',
   'toc',
   'meta',
@@ -146,6 +149,8 @@ const DEFAULT_UI_NAMESPACES = [
   'contribution_cta',
   'support',
   'rest',
+  'domain_edit',
+  'cookbook_landing',
 ]
 
 export function addUINamespaces(req: any, ui: UIStrings, namespaces: string[]) {
@@ -171,10 +176,9 @@ export const getMainContext = async (req: any, res: any): Promise<MainContextT> 
     delete req.context.site.data.ui.ms
   }
 
-  if (!req.context.page) {
-    throw new Error(`No page context (${req.url})`)
-  }
-  const { documentType } = req.context.page
+  const { page } = req.context
+
+  const documentType = page ? (page.documentType as string) : undefined
 
   const ui: UIStrings = {}
   addUINamespaces(req, ui, DEFAULT_UI_NAMESPACES)
@@ -202,11 +206,35 @@ export const getMainContext = async (req: any, res: any): Promise<MainContextT> 
     }
   }
 
-  return {
+  // This is a number, like 3.13 or it's possibly null if there is no
+  // supported release candidate at the moment.
+  const { releaseCandidate } = req.context.enterpriseServerReleases
+  // Combine the version number with the prefix so it can appear
+  // as a full version string if the release candidate is set.
+  const releaseCandidateVersion = releaseCandidate ? `enterprise-server@${releaseCandidate}` : null
+
+  const pageInfo =
+    (page && {
+      documentType,
+      type: req.context.page.type || null,
+      title: req.context.page.title,
+      fullTitle: req.context.page.fullTitle || null,
+      topics: req.context.page.topics || [],
+      introPlainText: req.context.page?.introPlainText || null,
+      applicableVersions: req.context.page?.permalinks.map((obj: any) => obj.pageVersion) || [],
+      hidden: req.context.page.hidden || false,
+      noEarlyAccessBanner: req.context.page.noEarlyAccessBanner || false,
+    }) ||
+    null
+
+  const currentProduct: ProductT = req.context.productMap[req.context.currentProduct] || null
+  const currentProductName: string = req.context.currentProductName || ''
+
+  const props: MainContextT = {
     breadcrumbs: req.context.breadcrumbs || {},
     communityRedirect: req.context.page?.communityRedirect || {},
-    currentProduct: req.context.productMap[req.context.currentProduct] || null,
-    currentLayoutName: req.context.currentLayoutName,
+    currentProduct,
+    currentProductName,
     isHomepageVersion: req.context.page?.documentType === 'homepage',
     error: req.context.error ? req.context.error.toString() : '',
     data: {
@@ -216,24 +244,13 @@ export const getMainContext = async (req: any, res: any): Promise<MainContextT> 
 
       variables: {
         release_candidate: {
-          version: req.context.getDottedData('variables.release_candidate.version') || null,
+          version: releaseCandidateVersion,
         },
       },
     },
     currentCategory: req.context.currentCategory || '',
     currentPathWithoutLanguage: req.context.currentPathWithoutLanguage,
-    relativePath: req.context.page?.relativePath,
-    page: {
-      documentType,
-      type: req.context.page.type || null,
-      title: req.context.page.title,
-      fullTitle: req.context.page.fullTitle,
-      topics: req.context.page.topics || [],
-      introPlainText: req.context.page?.introPlainText,
-      applicableVersions: req.context.page?.permalinks.map((obj: any) => obj.pageVersion) || [],
-      hidden: req.context.page.hidden || false,
-      noEarlyAccessBanner: req.context.page.noEarlyAccessBanner || false,
-    },
+    page: pageInfo,
     enterpriseServerReleases: pick(req.context.enterpriseServerReleases, [
       'isOldestReleaseDeprecated',
       'oldestSupported',
@@ -255,11 +272,18 @@ export const getMainContext = async (req: any, res: any): Promise<MainContextT> 
     // the product sidebar or the rest sidebar.
     sidebarTree: (includeSidebarTree && req.context.sidebarTree) || null,
     featureFlags: {},
-    searchVersions: req.context.searchVersions,
     nonEnterpriseDefaultVersion: req.context.nonEnterpriseDefaultVersion,
     status: res.statusCode,
-    fullUrl: req.protocol + '://' + req.get('host') + req.originalUrl,
+    fullUrl: req.protocol + '://' + req.hostname + req.originalUrl, // does not include port for localhost
   }
+
+  if (req.context.currentLayoutName) {
+    props.currentLayoutName = req.context.currentLayoutName
+  }
+  if (req.context.page?.relativePath) {
+    props.relativePath = req.context.page.relativePath
+  }
+  return props
 }
 
 export const MainContext = createContext<MainContextT | null>(null)

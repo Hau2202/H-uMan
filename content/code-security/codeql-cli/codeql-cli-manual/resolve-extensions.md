@@ -2,7 +2,6 @@
 title: resolve extensions
 versions: # DO NOT MANUALLY EDIT. CHANGES WILL BE OVERWRITTEN BY A 🤖
   fpt: '*'
-  ghae: '*'
   ghec: '*'
   ghes: '*'
 topics:
@@ -32,8 +31,8 @@ codeql resolve extensions <options>... -- <query|dir|suite|pack>...
 
 ## Description
 
-\[Experimental] \[Deep plumbing] Determine accessible extensions. This
-includes machine learning models and data extensions.
+\[Deep plumbing] Determine accessible extensions. This includes machine
+learning models and data extensions.
 
 This plumbing command resolves the set of data extensions and
 GitHub-created machine learning models that are available to the query
@@ -43,14 +42,14 @@ specifiers passed in as command line arguments.
 
 ### Primary Options
 
-#### `<querysuite|pack>...`
+#### `<query|dir|suite|pack>...`
 
 \[Mandatory] Queries to execute. Each argument is in the form
 `scope/name@range:path` where:
 
-- `scope/name` is the qualified name of a CodeQL pack.
-- `range` is a semver range.
-- `path` is a file system path.
+* `scope/name` is the qualified name of a CodeQL pack.
+* `range` is a semver range.
+* `path` is a file system path.
 
 If a `scope/name` is specified, the `range` and `path` are optional. A
 missing `range` implies the latest version of the specified pack. A
@@ -105,6 +104,36 @@ actions will add this option on the fly, overriding any configured
 value.
 
 (Note: On Windows the path separator is `;`).
+
+#### `--model-packs=<`<name@range>>...
+
+A list of CodeQL pack names, each with an optional version range, to be
+used as model packs to customize the queries that are about to be
+evaluated.
+
+#### `--threat-model=<name>...`
+
+A list of threat models to enable or disable.
+
+The argument is the name of a threat model, optionally preceded by a
+'!'. If no '!' is present, the named threat model and all of its
+descendants are enabled. If a '!' is present, the named threat model
+and all of its descendants are disabled.
+
+The 'default' threat model is enabled by default, but can be disabled
+by specifying '--threat-model !default'.
+
+The 'all' threat model can be used to enable or disable all threat
+models.
+
+The --threat-model options are processed in order. For example,
+'--threat-model local --threat-model !environment' enables all of
+the threat models in the 'local' group except for the 'environment'
+threat model.
+
+This option only has an effect for languages that support threat models.
+
+Available since `v2.15.3`.
 
 ### Options for configuring the CodeQL package manager
 

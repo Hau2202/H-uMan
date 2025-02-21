@@ -24,7 +24,7 @@ export default async function createTree(originalPath, rootPath, previousTree) {
     filepath = `${originalPath}/index.md`
     // Note, if this throws, that's quite fine. It usually means that
     // there's a `index.md` whose `children:` entry lists something that
-    // doesn't exist on disk. So the writer who tries to preview the
+    // doesn't exist on disk. So the writer who tries to review the
     // page will see the error and it's hopefully clear what's actually
     // wrong.
     try {
@@ -35,7 +35,7 @@ export default async function createTree(originalPath, rootPath, previousTree) {
       }
       // Throw an error if we can't find a content file associated with the children: entry.
       // But don't throw an error if the user is running the site locally and hasn't cloned the Early Access repo.
-      if (originalPath === path.join('content', 'early-access')) {
+      if (originalPath === 'content/early-access') {
         return
       }
       throw new Error(
@@ -118,7 +118,7 @@ export default async function createTree(originalPath, rootPath, previousTree) {
             // `children:` property but it was decided to be skipped
             // (early exit instead of returning a tree). So let's
             // mutate the `page.children` so we can benefit from the
-            // ability to reload the site tree on consective requests.
+            // ability to reload the site tree on consecutive requests.
             item.page.children = item.page.children.filter((c) => c !== child)
           }
           return subTree

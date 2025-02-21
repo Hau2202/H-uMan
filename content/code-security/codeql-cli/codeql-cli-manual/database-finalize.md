@@ -2,7 +2,6 @@
 title: database finalize
 versions: # DO NOT MANUALLY EDIT. CHANGES WILL BE OVERWRITTEN BY A 🤖
   fpt: '*'
-  ghae: '*'
   ghec: '*'
   ghes: '*'
 topics:
@@ -25,7 +24,7 @@ redirect_from:
 ## Synopsis
 
 ```shell copy
-codeql database finalize [--dbscheme=<file>] [--threads=<num>] [--ram=<MB>] [--mode=<mode>] <options>... -- <database>
+codeql database finalize [--dbscheme=<file>] [--threads=<num>] [--ram=<MB>] <options>... -- <database>
 ```
 
 ## Description
@@ -131,7 +130,7 @@ If `--max-disk-cache` is not given, the evaluator will try hard to
 curtail disk cache usage if the free space on the file system drops
 below this percentage.
 
-#### `-m, --mode=<mode>`
+#### `--cache-cleanup=<mode>`
 
 Select how aggressively to trim the cache. Choices include:
 
@@ -179,6 +178,14 @@ Delete any backup directories resulting from database upgrades.
 \[Advanced] Construct entity IDs that encode the location in the TRAP
 file they came from. Can be useful for debugging of TRAP generators, but
 takes up a lot of space in the dataset.
+
+#### `--[no-]linkage-aware-import`
+
+\[Advanced] Controls whether [codeql dataset import](/code-security/codeql-cli/codeql-cli-manual/dataset-import) is linkage-aware _(default)_ or not. On projects where this part of database creation
+consumes too much memory, disabling this option may help them progress
+at the expense of database completeness.
+
+Available since `v2.15.3`.
 
 ### Common options
 

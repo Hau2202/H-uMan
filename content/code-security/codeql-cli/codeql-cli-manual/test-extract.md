@@ -2,7 +2,6 @@
 title: test extract
 versions: # DO NOT MANUALLY EDIT. CHANGES WILL BE OVERWRITTEN BY A 🤖
   fpt: '*'
-  ghae: '*'
   ghec: '*'
   ghes: '*'
 topics:
@@ -25,7 +24,7 @@ redirect_from:
 ## Synopsis
 
 ```shell copy
-codeql test extract <options>... -- <testDir>
+codeql test extract [--source-root=<dir>] <options>... -- <testDirectory>
 ```
 
 ## Description
@@ -40,7 +39,7 @@ execute test queries against.
 
 ### Primary Options
 
-#### `<testDir>`
+#### `<testDirectory>`
 
 \[Mandatory] The path to the test directory.
 
@@ -49,6 +48,11 @@ execute test queries against.
 Override the location of the database being created. By default it will
 be a subdirectory whose name is derived from the name of the test
 directory itself with '.testproj' appended.
+
+#### `-s, --source-root=<dir>`
+
+\[Advanced] The root source code directory, if different from the test
+directory.
 
 #### `--search-path=<dir>[:<dir>...]`
 
@@ -107,6 +111,14 @@ with multiple threads!
 \[Advanced] Construct entity IDs that encode the location in the TRAP
 file they came from. Can be useful for debugging of TRAP generators, but
 takes up a lot of space in the dataset.
+
+#### `--[no-]linkage-aware-import`
+
+\[Advanced] Controls whether [codeql dataset import](/code-security/codeql-cli/codeql-cli-manual/dataset-import) is linkage-aware _(default)_ or not. On projects where this part of database creation
+consumes too much memory, disabling this option may help them progress
+at the expense of database completeness.
+
+Available since `v2.15.3`.
 
 #### `--format=<fmt>`
 

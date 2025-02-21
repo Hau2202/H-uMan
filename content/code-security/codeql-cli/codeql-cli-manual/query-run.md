@@ -2,7 +2,6 @@
 title: query run
 versions: # DO NOT MANUALLY EDIT. CHANGES WILL BE OVERWRITTEN BY A 🤖
   fpt: '*'
-  ghae: '*'
   ghec: '*'
   ghes: '*'
 topics:
@@ -195,7 +194,13 @@ expense of making it much less human readable.
 
 #### `-M, --ram=<MB>`
 
-Set total amount of RAM the query evaluator should be allowed to use.
+The query evaluator will try hard to keep its total memory footprint
+below this value. (However, for large databases it is possible that the
+threshold may be broken by file-backed memory maps, which can be swapped
+to disk in case of memory pressure).
+
+The value should be at least 2048 MB; smaller values will be
+transparently rounded up.
 
 ### Options to control QL compilation
 
@@ -252,6 +257,11 @@ Don't check embedded query metadata in QLDoc comments for validity.
 
 \[Advanced] Override the default maximum size for a compilation cache
 directory.
+
+#### `--fail-on-ambiguous-relation-name`
+
+\[Advanced] Fail compilation if an ambiguous relation name is generated
+during compilation.
 
 ### Options to set up compilation environment
 
@@ -346,6 +356,14 @@ To authenticate to GitHub Enterprise Server Container registries, pass
 variable.
 
 This overrides the GITHUB\_TOKEN environment variable.
+
+### Options to control the extension packs
+
+#### `--model-packs=<`<name@range>>...
+
+A list of CodeQL pack names, each with an optional version range, to be
+used as model packs to customize the queries that are about to be
+evaluated.
 
 ### Common options
 
